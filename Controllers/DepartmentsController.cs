@@ -24,42 +24,42 @@ namespace Kata12BasicAPI.Controllers
         }
 
         [HttpGet("{id}")]
-public async Task<ActionResult<Department>> GetDepartment(int id)
-{
-    var department = await _context.Departments.FindAsync(id);
-    if (department == null)
-    {
-        return NotFound();
-    }
-    return Ok(department);
-}
-[HttpGet("{id}/employees")]
-public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeesByDepartment(int id)
-{
-    var department = await _context.Departments
-        .Include(d => d.Employees)
-        .Select(d => new DepartmentEmployeeDto
+        public async Task<ActionResult<Department>> GetDepartment(int id)
         {
-            Id = d.Id,
-            Name = d.Name,
-            Employees = d.Employees!.Select(e => new EmployeeDto
+            var department = await _context.Departments.FindAsync(id);
+            if (department == null)
             {
-                Id = e.Id,
-                FirstName = e.FirstName,
-                LastName = e.LastName
-            }).ToList()
-        })
-        .FirstOrDefaultAsync(d => d.Id == id);
-    if (department == null)
-    {
-        return NotFound();
-    }
-    return Ok(department);
-}
+                return NotFound();
+            }
+            return Ok(department);
+        }
+        [HttpGet("{id}/employees")]
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeesByDepartment(int id)
+        {
+            var department = await _context.Departments
+                .Include(d => d.Employees)
+                .Select(d => new DepartmentEmployeeDto
+                {
+                    Id = d.Id,
+                    Name = d.Name,
+                    Employees = d.Employees!.Select(e => new EmployeeDto
+                    {
+                        Id = e.Id,
+                        FirstName = e.FirstName,
+                        LastName = e.LastName
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync(d => d.Id == id);
+            if (department == null)
+            {
+                return NotFound();
+            }
+            return Ok(department);
+        }
 
 
     }
 
-    
-    
+
+
 }
