@@ -7,5 +7,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<Employee> Employees {get; set;}
     public DbSet<Department> Departments {get; set;}
+
+    public DbSet<Project> Projects {get; set;}
 }
 

@@ -57,9 +57,24 @@ namespace Kata12BasicAPI.Controllers
             return Ok(department);
         }
 
+        [HttpGet("projects")]
+        public async Task<ActionResult<IEnumerable<Department>>> GetDepartments(string? sortBy = null)
+        {
+            IQueryable<Department> departments = _context.Departments.Include(d => d.Projects);
 
+            if (sortBy == "projectCount")
+            {
+                departments = departments.OrderByDescending(d => d.Projects.Count);
+            }
+
+            return Ok(await departments.Select(d => new DepartmentDto
+            {
+                Id = d.Id,
+                Name = d.Name,
+                ProjectCount = d.Projects.Count
+            }).ToListAsync());
+
+        }
     }
-
-
 
 }
