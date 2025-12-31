@@ -9,47 +9,35 @@ namespace Kata12BasicAPI.Controllers
     [ApiController]
     public class DepartmentController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IDepartmentService _service;
 
-        public DepartmentController(AppDbContext context)
-        {
-            _context = context;
+        public DepartmentController(IDepartmentService service) {
+            _service = service;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Department>>> GetDepartments()
         {
-            var departments = await _context.Departments.ToListAsync();
+            var departments = await _service.GetDepartmentsAsync();
             return Ok(departments);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Department>> GetDepartment(int id)
         {
-            var department = await _context.Departments.FindAsync(id);
+            var department = await _service.GetDepartmentAsync(id);
             if (department == null)
             {
                 return NotFound();
             }
             return Ok(department);
+
         }
         [HttpGet("{id}/employees")]
         public async Task<ActionResult<IEnumerable<Employee>>> GetEmployeesByDepartment(int id)
         {
-            var department = await _context.Departments
-                .Include(d => d.Employees)
-                .Select(d => new DepartmentEmployeeDto
-                {
-                    Id = d.Id,
-                    Name = d.Name,
-                    Employees = d.Employees!.Select(e => new EmployeeDto
-                    {
-                        Id = e.Id,
-                        FirstName = e.FirstName,
-                        LastName = e.LastName
-                    }).ToList()
-                })
-                .FirstOrDefaultAsync(d => d.Id == id);
+
+            var department = await _service.GetDepartmentWithEmployeesAsync(id);
             if (department == null)
             {
                 return NotFound();
@@ -58,21 +46,11 @@ namespace Kata12BasicAPI.Controllers
         }
 
         [HttpGet("projects")]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartments(string? sortBy = null)
+        public async Task<ActionResult<IEnumerable<Department>>> GetProjectsByDepartment(string? sortBy = null)
         {
-            IQueryable<Department> departments = _context.Departments.Include(d => d.Projects);
+            var departments = await _service.GetDepartmentsWithProjects(sortBy);
 
-            if (sortBy == "projectCount")
-            {
-                departments = departments.OrderByDescending(d => d.Projects.Count);
-            }
-
-            return Ok(await departments.Select(d => new DepartmentDto
-            {
-                Id = d.Id,
-                Name = d.Name,
-                ProjectCount = d.Projects.Count
-            }).ToListAsync());
+            return Ok(departments);
 
         }
     }
