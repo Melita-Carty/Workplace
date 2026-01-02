@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Service layer
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
@@ -27,3 +27,8 @@ app.UseHttpsRedirection();
 app.MapControllers();
 
 app.Run();
+
+namespace BasicApi
+{
+    public partial class Program { }
+}
