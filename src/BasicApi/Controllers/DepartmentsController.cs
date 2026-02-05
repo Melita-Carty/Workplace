@@ -11,7 +11,8 @@ namespace Kata12BasicAPI.Controllers
     {
         private readonly IDepartmentService _service;
 
-        public DepartmentController(IDepartmentService service) {
+        public DepartmentController(IDepartmentService service)
+        {
             _service = service;
         }
 
